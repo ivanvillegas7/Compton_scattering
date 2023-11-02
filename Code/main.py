@@ -15,7 +15,15 @@ import scipy as sc
 
 import plots
 
+import calibration
+
 def peaks(option: bool):
+    
+    params: np.array(float) = np.array(calibration.calibrate())
+    
+    m: float = params[0]
+    
+    n: float = params[1]
     
     if option.upper()=='N':
     
@@ -35,16 +43,10 @@ def peaks(option: bool):
         E: np.array(float) = data[:, 0]
         
         I: np.array(float) = data[:, 1]
-    
-        i: int = np.argmax(I)
         
-        print(f'\nPosition for the highest peak for {file}: {i}.')
+        peak.append(E[np.argmax(I)])
         
-        print(f'\nScattered energy peak for {file}: {E[i]} keV.')
-        
-        peak.append(E[i])
-        
-    return peak
+    return np.array(peak)
 
 def curve(x:np.array(float), m: float, n: float):
     
@@ -57,6 +59,16 @@ def main():
     c: float = 1#Natural units
     
     E: float = 661.7#keV
+    
+    m: float
+    
+    n: float
+    
+    sigma_m: float
+    
+    sigma_n: float
+    
+    m, n, sigma_m, sigma_n = calibration.calibrate()
     
     theta_th: np.array(float) = np.linspace(0, np.pi)
     
@@ -73,12 +85,18 @@ def main():
         print(f'\n{option} is not a valid character. Type Y or N.')
         
         option = input('Do you want to use the corrected data? [Y/N]: ')
-    
-    E_prime: np.array(float) = np.array(peaks(option))
         
-    err_E_prime: np.array(float) = 1/E_prime**2
+    E_prime: np.array(float) = peaks(option)*m+n*np.ones(len(theta))
+           
+    sigma_E: np.array(float)
+    
+    sigma_E = np.sqrt(m**2*0.5**2+peaks(option)**2*sigma_m**2+sigma_n**2)
+    
+    err_E_prime: np.array(float) = sigma_E/E_prime**2
     
     err_theta: np.array(float) = 0.1*(np.sin(theta))
+    
+    err_theta[0] = np.max(err_theta)
     
     params: np.array(float)
     
@@ -87,9 +105,9 @@ def main():
     params, cov = sc.optimize.curve_fit(curve, 1-np.cos(theta), 1/E_prime,\
                                         sigma=err_E_prime)
     
-    m: float = params[0]
+    a: float = params[0]
     
-    n: float = params[1]
+    b: float = params[1]
     
     x: np.array(float) = 1-np.cos(theta)
     
@@ -98,8 +116,8 @@ def main():
     plt.figure()
     plt.errorbar(x, 1/E_prime, xerr=err_theta, yerr=err_E_prime,\
                  label='Experimental data', marker= '.', linestyle='none')
-    plt.plot(x_th, m*(1-np.cos(theta_th))+n,\
-             label=f'Fit: {m:.3f}x+({n:.3f})')
+    plt.plot(x_th, a*(1-np.cos(theta_th))+b,\
+             label=f'Fit: {a:.3f}x+({b:.3f})')
     plt.plot(x_th, 1/E_prime_th, label='Theoretical curve')
     plt.xlabel(r'$1-\cos{(\theta)}$')
     plt.ylabel(r"$E'^{-1}$ [keV$^{-1}$]")
@@ -107,10 +125,10 @@ def main():
     plt.xlim(right=2)
     plt.legend()
     plt.grid()
-    plt.savefig(f'../Plots/plot_{option}_fit.pdf')
+    plt.savefig(f'../Plots/plot {option}.pdf')
     
-    print(f'\nThe determined mass of the electron is m_e = ({1/m}±{cov[0, 0]/m**2}) keV/c².')
+    print(f'\nThe determined mass of the electron is m_e = ({1/a}±{cov[0, 0]/a**2}) keV/c².')
     
-    print(f'\nThe determined incident energy is E = ({1/n}±{cov[1, 1]/n**2}) keV.')
+    print(f'\nThe determined incident energy is E = ({1/b}±{cov[1, 1]/b**2}) keV.')
     
 main()
