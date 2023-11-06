@@ -55,8 +55,9 @@ def plot(option: str):
 
     else:    
 
-        files: List[str] = ['0 deg', '30 deg', '60 deg', '90 deg', '120 deg',\
-                            '90 deg block', '120 deg block', 'sodium cal', 'cesium cal']
+        files: List[str] = ['0 deg', '30 deg', '90 deg', '120 deg',\
+                            '90 deg block', '120 deg block', 'sodium cal',\
+                                'cesium cal']
         
         params: np.array(float) = np.array(calibration.calibrate())
         

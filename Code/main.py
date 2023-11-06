@@ -23,7 +23,7 @@ def peaks(option: bool):
     
     if option.upper()=='N':
     
-        files: List[str] = ['0 deg', '30 deg', '60 deg', '90 deg', '120 deg']
+        files: List[str] = ['0 deg', '30 deg', '90 deg', '120 deg']
         
     elif option.upper()=='TEST':
         
@@ -44,8 +44,7 @@ def peaks(option: bool):
     
     else:
         
-        files: List[str] = ['0 deg', '30 deg', '60 deg', '90 deg block',\
-                            '120 deg block']
+        files: List[str] = ['0 deg', '30 deg', '90 deg block', '120 deg block']
        
     for file in files:
         
