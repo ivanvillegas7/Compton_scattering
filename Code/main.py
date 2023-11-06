@@ -19,32 +19,43 @@ import calibration
 
 def peaks(option: bool):
     
-    params: np.array(float) = np.array(calibration.calibrate())
-    
-    m: float = params[0]
-    
-    n: float = params[1]
+    peak: List[float] = []
     
     if option.upper()=='N':
     
         files: List[str] = ['0 deg', '30 deg', '60 deg', '90 deg', '120 deg']
+        
+    elif option.upper()=='TEST':
+        
+        files: List[str] = ['guessed_zero', '35_degrees', '65_degrees',\
+                            '95_degrees', '120_degrees']
+            
+        for file in files:
+            
+            data = np.loadtxt(f'../Test/{file}.asc')
+            
+            Ch: np.array(float) = data[:, 0]
+            
+            I: np.array(float) = data[:, 1]
+            
+            peak.append(Ch[np.argmax(I)])
+            
+        return np.array(peak)
     
     else:
         
         files: List[str] = ['0 deg', '30 deg', '60 deg', '90 deg block',\
                             '120 deg block']
-    
-    peak: List[float] = []
-    
+       
     for file in files:
         
         data = np.loadtxt(f'../Data/{file}.asc', skiprows=2)
         
-        E: np.array(float) = data[:, 0]
+        Ch: np.array(float) = data[:, 0]
         
         I: np.array(float) = data[:, 1]
         
-        peak.append(E[np.argmax(I)])
+        peak.append(Ch[np.argmax(I)])
         
     return np.array(peak)
 
@@ -60,6 +71,18 @@ def main():
     
     E: float = 661.7#keV
     
+    print('')
+    
+    option: bool = input('Do you want to use the corrected data? [Y/N]: ')
+    
+    while option.upper()!='Y' and option.upper()!='N' and option.upper()!='TEST':
+        
+        print(f'\n{option} is not a valid character. Type Y or N.')
+        
+        option = input('Do you want to use the corrected data? [Y/N]: ')
+        
+    print('')
+    
     m: float
     
     n: float
@@ -68,23 +91,27 @@ def main():
     
     sigma_n: float
     
-    m, n, sigma_m, sigma_n = calibration.calibrate()
+    if option.upper()=='TEST':
+        
+        m = 1.862
+        
+        n = -17.446
+        
+        sigma_m = 0
+        
+        sigma_n = 0
+        
+    else:
+    
+        m, n, sigma_m, sigma_n = calibration.calibrate()
+        
+    plots.plot(option)
     
     theta_th: np.array(float) = np.linspace(0, np.pi)
     
     E_prime_th: np.array(float) = 1/((1/E) + (1-np.cos(theta_th))/(m_e*c**2))
     
     theta: np.array(float) = np.array([0, 30, 60, 90, 120])*np.pi/180
-    
-    print('')
-    
-    option: bool = input('Do you want to use the corrected data? [Y/N]: ')
-    
-    while option.upper()!='Y' and option.upper()!='N':
-        
-        print(f'\n{option} is not a valid character. Type Y or N.')
-        
-        option = input('Do you want to use the corrected data? [Y/N]: ')
         
     E_prime: np.array(float) = peaks(option)*m+n*np.ones(len(theta))
            
@@ -125,7 +152,11 @@ def main():
     plt.xlim(right=2)
     plt.legend()
     plt.grid()
-    plt.savefig(f'../Plots/plot {option}.pdf')
+    
+    if option.upper()=='TEST':
+        plt.savefig('../Test/plot.pdf')
+    else:
+        plt.savefig(f'../Plots/plot {option}.pdf')
     
     print(f'\nThe determined mass of the electron is m_e = ({1/a}±{cov[0, 0]/a**2}) keV/c².')
     

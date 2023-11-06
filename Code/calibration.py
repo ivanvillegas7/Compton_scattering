@@ -14,7 +14,7 @@ from typing import List
 
 def calibrate():
     
-    data = np.loadtxt(f'../Data/sodium cal.asc', skiprows=2)
+    data = np.loadtxt('../Data/sodium cal.asc', skiprows=2)
     
     E: np.array(float) = data[:, 0]
     
