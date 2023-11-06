@@ -34,8 +34,8 @@ def plot(option: str):
     
     if option.upper()=='TEST':
         
-        files: List[str] = ['guessed_zero', '35_degrees', '65_degrees', '95_degrees',\
-                            '120_degrees']
+        files: List[str] = ['guessed_zero', '35_degrees', '65_degrees',
+                            '95_degrees', '120_degrees']
             
         m: float = 1.862
         
@@ -57,7 +57,7 @@ def plot(option: str):
 
         files: List[str] = ['0 deg', '30 deg', '90 deg', '120 deg',\
                             '90 deg block', '120 deg block', 'sodium cal',\
-                                'cesium cal']
+                            'cesium cal']
         
         params: np.array(float) = np.array(calibration.calibrate())
         

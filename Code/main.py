@@ -17,7 +17,7 @@ import plots
 
 import calibration
 
-def peaks(option: bool):
+def peaks(option: bool, m: float, n: float):
     
     peak: List[float] = []
     
@@ -50,9 +50,9 @@ def peaks(option: bool):
         
         data = np.loadtxt(f'../Data/{file}.asc', skiprows=2)
         
-        Ch: np.array(float) = data[:, 0]
+        Ch: np.array(float) = data[round((205-n)/m):, 0]
         
-        I: np.array(float) = data[:, 1]
+        I: np.array(float) = data[round((205-n)/m):, 1]
         
         peak.append(Ch[np.argmax(I)])
         
@@ -110,13 +110,13 @@ def main():
     
     E_prime_th: np.array(float) = 1/((1/E) + (1-np.cos(theta_th))/(m_e*c**2))
     
-    theta: np.array(float) = np.array([0, 30, 60, 90, 120])*np.pi/180
+    theta: np.array(float) = np.array([0, 30, 90, 120])*np.pi/180
         
-    E_prime: np.array(float) = peaks(option)*m+n*np.ones(len(theta))
+    E_prime: np.array(float) = peaks(option, m, n)*m+n*np.ones(len(theta))
            
     sigma_E: np.array(float)
     
-    sigma_E = np.sqrt(m**2*0.5**2+peaks(option)**2*sigma_m**2+sigma_n**2)
+    sigma_E = np.sqrt(m**2*0.5**2+peaks(option, m, n)**2*sigma_m**2+sigma_n**2)
     
     err_E_prime: np.array(float) = sigma_E/E_prime**2
     
@@ -131,9 +131,15 @@ def main():
     params, cov = sc.optimize.curve_fit(curve, 1-np.cos(theta), 1/E_prime,\
                                         sigma=err_E_prime)
     
+    print('Fit: mx+n\n')
+        
     a: float = params[0]
     
+    print(f'm = {a}')
+    
     b: float = params[1]
+    
+    print(f'n = {b}')
     
     x: np.array(float) = 1-np.cos(theta)
     
@@ -142,8 +148,7 @@ def main():
     plt.figure()
     plt.errorbar(x, 1/E_prime, xerr=err_theta, yerr=err_E_prime,\
                  label='Experimental data', marker= '.', linestyle='none')
-    plt.plot(x_th, a*(1-np.cos(theta_th))+b,\
-             label=f'Fit: {a:.3f}x+({b:.3f})')
+    plt.plot(x_th, a*(1-np.cos(theta_th))+b, label='Fit: mx+n')
     plt.plot(x_th, 1/E_prime_th, label='Theoretical curve')
     plt.xlabel(r'$1-\cos{(\theta)}$')
     plt.ylabel(r"$E'^{-1}$ [keV$^{-1}$]")
