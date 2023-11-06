@@ -1,6 +1,6 @@
 # Compton scattering
 GitHub repository for the Compton scattering experient.
 
-The letter y or n indicates if the correction has been taken into acount. Without the correction, the computed results are m_e= (-30620±50) keV/c² and E = (648.226±0.024) keV. With the correction, the results are m_e= (402.61±0.20) keV/c² and E = (649.858±0.019) keV.
+The letter y or n indicates if the correction has been taken into acount. Without the correction, the computed results are m_e= (-30000±210000) keV/c² and E = (650±100) keV. With the correction, the results are m_e= (400±180) keV/c² and E = (650±100) keV.
 
-With the test data, the results are m_e= (478.117±0.013) keV/c² and E = (664.0882±0.0018) keV.
+With the test data, the results are m_e= (510±60) keV/c² and E = (670±30) keV.
