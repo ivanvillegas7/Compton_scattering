@@ -100,17 +100,19 @@ def main():
         
         sigma_n = 0
         
+        theta: np.array(float) = np.array([0, 35, 65, 95, 120])*np.pi/180
+        
     else:
     
         m, n, sigma_m, sigma_n = calibration.calibrate()
+        
+        theta: np.array(float) = np.array([0, 30, 90, 120])*np.pi/180
         
     plots.plot(option)
     
     theta_th: np.array(float) = np.linspace(0, np.pi)
     
     E_prime_th: np.array(float) = 1/((1/E) + (1-np.cos(theta_th))/(m_e*c**2))
-    
-    theta: np.array(float) = np.array([0, 30, 90, 120])*np.pi/180
         
     E_prime: np.array(float) = peaks(option, m, n)*m+n*np.ones(len(theta))
            
@@ -162,8 +164,8 @@ def main():
     else:
         plt.savefig(f'../Plots/plot {option}.pdf')
     
-    print(f'\nThe determined mass of the electron is m_e = ({1/a}±{cov[0, 0]/a**2}) keV/c².')
+    print(f'\nThe determined mass of the electron is m_e = ({1/a}±{np.sqrt(cov[0, 0])/a**2}) keV/c².')
     
-    print(f'\nThe determined incident energy is E = ({1/b}±{cov[1, 1]/b**2}) keV.')
+    print(f'\nThe determined incident energy is E = ({1/b}±{np.sqrt(cov[1, 1])/b**2}) keV.')
     
 main()

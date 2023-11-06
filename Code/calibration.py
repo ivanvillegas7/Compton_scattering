@@ -74,6 +74,6 @@ def calibrate():
     plt.legend()
     plt.grid()
     
-    return (m, n, cov[0, 0], cov[1, 1])
+    return (m, n, np.sqrt(cov[0, 0]), np.sqrt(cov[1, 1]))
     
     
