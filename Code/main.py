@@ -108,7 +108,7 @@ def main():
         
         theta: np.array(float) = np.array([0, 30, 90, 120])*np.pi/180
         
-    plots.plot(option)
+    plots.plot(option, m, n)
     
     theta_th: np.array(float) = np.linspace(0, np.pi)
     

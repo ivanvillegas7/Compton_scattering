@@ -12,8 +12,6 @@ import matplotlib.pyplot as plt
 
 from typing import List
 
-import calibration
-
 def plot_spectra(file: str, m: float, n: float, option: str):
     
     if option.upper()=='TEST':
@@ -30,16 +28,12 @@ def plot_spectra(file: str, m: float, n: float, option: str):
     
     plt.plot(E, I, label=file, marker='.', ls='none')
     
-def plot(option: str):
+def plot(option: str, m: float, n: float):
     
     if option.upper()=='TEST':
         
         files: List[str] = ['guessed_zero', '35_degrees', '65_degrees',
                             '95_degrees', '120_degrees']
-            
-        m: float = 1.862
-        
-        n: float = -17.446
         
         for file in files:
             
@@ -58,12 +52,6 @@ def plot(option: str):
         files: List[str] = ['0 deg', '30 deg', '90 deg', '120 deg',\
                             '90 deg block', '120 deg block', 'sodium cal',\
                             'cesium cal']
-        
-        params: np.array(float) = np.array(calibration.calibrate())
-        
-        m: float = params[0]
-        
-        n: float = params[1]
             
         for file in files:
             
