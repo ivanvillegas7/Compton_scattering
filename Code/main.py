@@ -62,7 +62,7 @@ def curve(x:np.array(float), m: float, n: float):
     
     return m*x+n
 
-def main():
+def main1():
 
     m_e: float = 511#keV/c²
     
@@ -167,5 +167,65 @@ def main():
     print(f'\nThe determined mass of the electron is m_e = ({1/a}±{np.sqrt(cov[0, 0])/a**2}) keV/c².')
     
     print(f'\nThe determined incident energy is E = ({1/b}±{np.sqrt(cov[1, 1])/b**2}) keV.')
+
+def main2():
+
+    m_e: float = 511#keV/c²
     
-main()
+    c: float = 1#Natural units
+    
+    E: float = 661.7#keV
+    
+    theta: np.array(float) = np.array([0, 30, 90, 120])*np.pi/180
+    
+    theta_th: np.array(float) = np.linspace(0, np.pi)
+    
+    E_prime_th: np.array(float) = 1/((1/E) + (1-np.cos(theta_th))/(m_e*c**2))
+        
+    E_prime: np.array(float) = np.array([662.1, 536.2, 274.4, 206.7])
+           
+    sigma_E: np.array(float) = np.array([0.4, 1.2, 2.03, 2])
+    
+    err_E_prime: np.array(float) = sigma_E/E_prime**2
+    
+    err_theta: np.array(float) = 0.1*(np.sin(theta))
+    
+    err_theta[0] = np.max(err_theta)
+    
+    params: np.array(float)
+    
+    cov: List[np.array(float), np.array(float)]
+              
+    params, cov = sc.optimize.curve_fit(curve, 1-np.cos(theta), 1/E_prime,\
+                                        sigma=err_E_prime)
+    
+    print('Fit: mx+n\n')
+        
+    a: float = params[0]
+    
+    print(f'm = {a}')
+    
+    b: float = params[1]
+    
+    print(f'n = {b}')
+    
+    x: np.array(float) = 1-np.cos(theta)
+    
+    x_th: np.array(float) = 1-np.cos(theta_th)
+    
+    plt.figure()
+    plt.errorbar(x, 1/E_prime, xerr=err_theta, yerr=err_E_prime,\
+                 label='Experimental data', marker= '.', linestyle='none')
+    plt.plot(x_th, a*(1-np.cos(theta_th))+b, label='Fit: mx+n')
+    plt.plot(x_th, 1/E_prime_th, label='Theoretical curve')
+    plt.xlabel(r'$1-\cos{(\theta)}$')
+    plt.ylabel(r"$E'^{-1}$ [keV$^{-1}$]")
+    plt.title(r"$E'^{-1}$ against $1-\cos{(\theta)}$ in the Compton scattering")
+    plt.xlim(right=2)
+    plt.legend()
+    plt.grid()
+    plt.savefig('../Plots/Final plot.pdf')
+    
+    print(f'\nThe determined mass of the electron is m_e = ({1/a}±{np.sqrt(cov[0, 0])/a**2}) keV/c².')
+    
+    print(f'\nThe determined incident energy is E = ({1/b}±{np.sqrt(cov[1, 1])/b**2}) keV.')
