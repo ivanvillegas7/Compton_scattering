@@ -168,7 +168,7 @@ def main1():
     
     print(f'\nThe determined incident energy is E = ({1/b}±{np.sqrt(cov[1, 1])/b**2}) keV.')
 
-def main2():
+def main():
 
     m_e: float = 511#keV/c²
     
@@ -224,8 +224,31 @@ def main2():
     plt.xlim(right=2)
     plt.legend()
     plt.grid()
-    plt.savefig('../Plots/Final plot.pdf')
+    plt.savefig('../Results/Final plot.pdf')
     
     print(f'\nThe determined mass of the electron is m_e = ({1/a}±{np.sqrt(cov[0, 0])/a**2}) keV/c².')
     
-    print(f'\nThe determined incident energy is E = ({1/b}±{np.sqrt(cov[1, 1])/b**2}) keV.')
+    print(f'\nThe determined incident energy is E = ({1/b}±{np.sqrt(cov[1, 1])/b**2}) keV.\n')
+    
+    r_0: float = 1.2e-15#m
+    
+    E_e: np.array(float) = E*(1-1/(1+(E/m_e)*(1-np.cos(theta_th))))
+    
+    g_0: np.array(float)
+    
+    g_0 = (E_prime_th/E)**2*(E_prime_th/E+E/E_prime_th-np.sin(theta_th)**2)/2
+    
+    dsdE: np.array(float)
+    
+    dsdE = 2*np.pi*r_0**2*g_0*((1+(E/m_e)*(1-np.cos(theta_th)))**2*m_e/E**2)
+                            
+    plt.figure()
+    plt.plot(E_e, dsdE, label=r'$\frac{d\sigma}{dE_e}$')
+    plt.xlabel(r'$E_e$ [keV]')
+    plt.ylabel(r"$\frac{d\sigma}{dE_e}$ [keV$^{-2}$]")
+    plt.title(r"$\frac{d\sigma}{dE_e}$ against $E_e$ in the Compton scattering")
+    plt.legend()
+    plt.grid()
+    plt.savefig('../Results/Question 3.pdf')
+
+main()
