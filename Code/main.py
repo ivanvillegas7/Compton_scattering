@@ -199,7 +199,7 @@ def main():
     params, cov = sc.optimize.curve_fit(curve, 1-np.cos(theta), 1/E_prime,\
                                         sigma=err_E_prime)
     
-    print('Fit: mx+n\n')
+    print('\nFit: mx+n\n')
         
     a: float = params[0]
     
@@ -232,18 +232,25 @@ def main():
     
     r_0: float = 1.2e-15#m
     
-    E_e: np.array(float) = E*(1-1/(1+(E/m_e)*(1-np.cos(theta_th))))
+    E_e_th: np.array(float) = E*(1-1/(1+(E/m_e)*(1-np.cos(theta_th))))
     
-    g_0: np.array(float)
+    g_0_th: np.array(float)
     
-    g_0 = (E_prime_th/E)**2*(E_prime_th/E+E/E_prime_th-np.sin(theta_th)**2)/2
+    g_0_th = (E_prime_th/E)**2*(E_prime_th/E+E/E_prime_th-np.sin(theta_th)**2)/2
     
-    dsdE: np.array(float)
+    dsdE_th: np.array(float)
     
-    dsdE = 2*np.pi*r_0**2*g_0*((1+(E/m_e)*(1-np.cos(theta_th)))**2*m_e/E**2)
+    dsdE_th = 2*np.pi*r_0**2*g_0_th*((1+(E/m_e)*(1-np.cos(theta_th)))**2*m_e/E**2)
+    
+    E_e: np.array(float) = E*(1-1/(1+(E/m_e)*(1-np.cos(theta))))
+    
+    g_0: np.array(float) = (E_prime/E)**2*(E_prime/E+E/E_prime-np.sin(theta)**2)/2
+    
+    dsdE: np.array(float) = 2*np.pi*r_0**2*g_0*((1+(E/m_e)*(1-np.cos(theta)))**2*m_e/E**2)
                             
     plt.figure()
-    plt.plot(E_e, dsdE, label=r'$\frac{d\sigma}{dE_e}$')
+    plt.plot(E_e_th, dsdE_th, label=r'Theoretical curve')
+    plt.plot(E_e, dsdE, label=r'Experimental data', marker='o', ls='none')
     plt.xlabel(r'$E_e$ [keV]')
     plt.ylabel(r"$\frac{d\sigma}{dE_e}$ [keV$^{-2}$]")
     plt.title(r"$\frac{d\sigma}{dE_e}$ against $E_e$ in the Compton scattering")
